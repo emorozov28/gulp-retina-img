@@ -1,60 +1,67 @@
 'use strict';
 
-var through = require('through2');
-var cheerio = require('cheerio');
-var objectAssign = require('object-assign');
+const through = require('through2');
+const cheerio = require('cheerio');
+const objectAssign = require('object-assign');
 
-var reImageSrc = /^((?:(?:http|https):\/\/)?(?:.+))(\.(?:gif|png|jpg|jpeg|webp))$/;
-
-var defaultOptions = {
+const defaultOptions = {
 	decodeEntities: false,
 
-	// suffix: {1: '', 2: '@2x', 3: '@3x', 4: '@4x'}
-	suffix: {1: '', 2: '@2x', 3: '@3x'}
+	suffix: {
+		1: '',
+		2: '@2x'
+	},
+
+	reImageSrc: /^((?:(?:http|https):\/\/)?(?:.+))(\.(?:gif|png|jpg|jpeg|webp))$/
 }
 
-var imageRetina = function(options){
+const imageRetina = function (options) {
 
 	options = objectAssign({}, defaultOptions, options);
 
-	return through.obj(function(file, enc, cb){
-		if (file.isNull()){
+	return through.obj(function (file, enc, cb) {
+		if (file.isNull()) {
 			cb(null, file);
 			return;
 		}
 
-		if (file.isStream()){
+		if (file.isStream()) {
 			cb(new gutil.PluginError('gulp-img-retina', 'Streaming not supported'));
 			return;
 		}
 
-		var content = file.contents.toString();
+		const content = file.contents.toString();
 
-		var $ = cheerio.load( content, options );
+		const $ = cheerio.load(content, options);
 
-		var imgList = $('img');
+		const imgList = $('img');
+		const sourceList = $('source');
 
-		imgList.each(function(item){
-			var _this = $(this);
-			var src = _this.attr('src');
+		function imageList(list, option) {
+			list.each(function () {
+				const _this = $(this);
+				const src = _this.attr(option);
+	
+				const tmpSrc = [];
+				const match = src.match(options.reImageSrc);
+	
+				if (match === null) {
+					return true;
+				}
+	
+				for (let key in options.suffix) {
+					tmpSrc.push(match[1] + options.suffix[key] + match[2] + ' ' + key + 'x');
+				}
+	
+				_this.attr('srcset', tmpSrc.join(', '));
+	
+			});
+		}
 
-			var tmpSrc = [];
-			var match = src.match(reImageSrc);
-			
-			// not a valid src attribute
-			if (match === null){
-				return true;
-			}
+		imageList(imgList, 'src')
+		imageList(sourceList, 'srcset')
 
-			for( var key in options.suffix ){
-				tmpSrc.push( match[1]+options.suffix[key]+match[2]+' '+key+'x' );
-			}
-
-			_this.attr('srcset', tmpSrc.join(', '));
-		});
-		// console.log($.html());
-
-		file.contents = new Buffer( $.html() );
+		file.contents = new Buffer($.html());
 
 		cb(null, file);
 	});

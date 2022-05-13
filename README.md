@@ -1,57 +1,63 @@
-# gulp-img-retina
+# gulp-retina-img
 
-[![Build Status](https://travis-ci.org/germanyt/gulp-img-retina.svg?branch=master)](https://travis-ci.org/germanyt/gulp-img-retina)
+[![npm version](https://badge.fury.io/gulp-retina-img.svg)](https://www.npmjs.com/package/gulp-retina-img)
 
-add img attribute 'srcset' for retina
-
-## Prerequisites
-You must have retina images in the folder which the original image in.
-
-## Install
-
-`npm install gulp-img-retina`
+A library that adds the img 'srcset' attribute to retina
 
 ## Usage
 
 ``` js
-var gulp = require('gulp');
-var imgRetina = require('gulp-img-retina');
+const gulp = require('gulp');
+const retinaImg = require('gulp-retina-img');
 
-var retinaOpts = {
-    // Your options here.
-};
 
 gulp.task('views', function() {
 
   return gulp.src('./views/**/*.html')
-    .pipe(imgRetina(retinaOpts))
-    .on('error', function(e) {
-      console.log(e.message);
-    })
-    .pipe(gulp.dest('./build'));
+    .pipe(retinaImg())
+    .pipe(gulp.dest('./dist'));
 
 });
 ```
 
 You put html in:
 ``` html
-<figure>
-	<img src="images/default/example.jpg" alt="example image" />
-</figure>
+  <img src="example.png" alt="example" />
 ```
 
 And get html out:
 ``` html
 <figure>
-	<img src="images/default/example.jpg" alt="example image" srcset="images/default/example.jpg 1x, images/default/example@2x.jpg 2x, images/default/example@3x.jpg 3x" />
+	<img src="example.png" alt="example image" srcset="example.png 1x, example@2x.png 2x" />
 </figure>
 ```
 
-## Options (Optional)
+## Options
+Default
+suffix: {
+    1: '',
+		2: '@2x',
+		3: '@3x',
+}
 
-### options.suffix
-Type: ```Object```
+reImageSrc: /^((?:(?:http|https):\/\/)?(?:.+))(\.(?:gif|png|jpg|jpeg|webp))$/    - regular image search
+``` js
 
-Default: ```{1: '', 2: '@2x', 3: '@3x'}```
 
-The suffix will insert to image's path, the key is resolution, and value is suffix.
+const options = {
+  suffix: {
+		1: '',
+		2: '@2x',
+		3: '@3x',
+	},
+  reImageSrc: /^((?:(?:http|https):\/\/)?(?:.+))(\.(?:png|jpg|))$/
+}
+
+gulp.task('views', function() {
+
+  return gulp.src('./views/**/*.html')
+    .pipe(retinaImg(options))
+    .pipe(gulp.dest('./dist'));
+
+});
+```
