@@ -27,17 +27,14 @@ You put html in:
 
 And get html out:
 ``` html
-<figure>
 	<img src="example.png" alt="example image" srcset="example.png 1x, example@2x.png 2x" />
-</figure>
 ```
 
 ## Options
 Default
 suffix: {
     1: '',
-		2: '@2x',
-		3: '@3x',
+		2: '@2x'
 }
 
 reImageSrc: /^((?:(?:http|https):\/\/)?(?:.+))(\.(?:gif|png|jpg|jpeg|webp))$/    - regular image search
