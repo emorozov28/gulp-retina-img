@@ -1,6 +1,7 @@
 # gulp-retina-img
 
-[![npm version](https://badge.fury.io/gulp-retina-img.svg)](https://www.npmjs.com/package/gulp-retina-img)
+[![npm version](https://badge.fury.io/js/gulp-retina-img.svg)](https://www.npmjs.com/package/gulp-retina-img)
+
 
 A library that adds the img 'srcset' attribute to retina
 
@@ -22,12 +23,12 @@ gulp.task('views', function() {
 
 You put html in:
 ``` html
-  <img src="example.png" alt="example" />
+<img src="example.png" alt="example" />
 ```
 
 And get html out:
 ``` html
-	<img src="example.png" alt="example image" srcset="example.png 1x, example@2x.png 2x" />
+<img src="example.png" alt="example" srcset="example.png 1x, example@2x.png 2x" />
 ```
 
 ## Options
